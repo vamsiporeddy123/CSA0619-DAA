@@ -1,0 +1,37 @@
+# Brute Force String Matching
+
+def string_match(text, pattern):
+    n = len(text)
+    m = len(pattern)
+    matches = []
+
+    # Check every valid starting position
+    for i in range(n - m + 1):
+        match = True
+
+        # Compare pattern with text
+        for j in range(m):
+            if text[i + j] != pattern[j]:
+                match = False
+                break
+
+        # If all characters matched
+        if match:
+            matches.append(i)
+
+    return matches
+
+
+# Input
+text = input("Enter the text: ")
+pattern = input("Enter the pattern: ")
+
+# Output
+result = string_match(text, pattern)
+
+if result:
+    print("Pattern found at positions:", result)
+else:
+    print("Pattern not found")
+
+print("Time Complexity = Θ(n × m)")
