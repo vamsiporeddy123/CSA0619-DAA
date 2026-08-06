@@ -1,0 +1,49 @@
+import time
+
+max_depth = 0
+
+def merge_sort(arr, depth=1):
+    global max_depth
+    max_depth = max(max_depth, depth)
+
+    if len(arr) <= 1:
+        return arr
+
+    mid = len(arr) // 2
+
+    left = merge_sort(arr[:mid], depth + 1)
+    right = merge_sort(arr[mid:], depth + 1)
+
+    return merge(left, right)
+
+def merge(left, right):
+    result = []
+    i = j = 0
+
+    while i < len(left) and j < len(right):
+        if left[i] < right[j]:
+            result.append(left[i])
+            i += 1
+        else:
+            result.append(right[j])
+            j += 1
+
+    result.extend(left[i:])
+    result.extend(right[j:])
+    return result
+
+
+# Input
+arr = list(map(int, input("Enter numbers separated by space: ").split()))
+
+start = time.time()
+
+sorted_arr = merge_sort(arr)
+
+end = time.time()
+
+print("Sorted Array:", sorted_arr)
+print("Maximum Stack Depth:", max_depth)
+print("Execution Time:", round((end - start) * 1000, 4), "ms")
+print("Time Complexity = Θ(n log n)")
+print("Stack Space = Θ(log n)")
