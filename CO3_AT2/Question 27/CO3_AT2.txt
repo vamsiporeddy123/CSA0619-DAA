@@ -1,0 +1,29 @@
+import time
+
+# Quick Sort Function
+def quick_sort(arr):
+    if len(arr) <= 1:
+        return arr
+
+    pivot = arr[len(arr) // 2]
+
+    left = [x for x in arr if x < pivot]
+    middle = [x for x in arr if x == pivot]
+    right = [x for x in arr if x > pivot]
+
+    return quick_sort(left) + middle + quick_sort(right)
+
+
+# Input
+prices = list(map(float, input("Enter cryptocurrency prices: ").split()))
+
+start = time.time()
+
+sorted_prices = quick_sort(prices)
+
+end = time.time()
+
+print("Sorted Prices:", sorted_prices)
+print("Execution Time:", round((end - start) * 1000, 4), "ms")
+print("Average Time Complexity = Θ(n log n)")
+print("Worst Case = Θ(n²)")
