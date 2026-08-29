@@ -1,0 +1,70 @@
+ALGORITHM MAXIMUM-CUT-BACKTRACKING(G = (V, E))
+INPUT:
+    G = undirected graph
+    V = {v1, v2, ..., vn}
+    E = set of edges (u, v)
+OUTPUT:
+    Partition A, Partition B
+    Maximum cut value bestCut
+VARIABLES:
+    side[1..n]       // 0 = unassigned, 1 = A, 2 = B
+    bestSide[1..n]
+    bestCut = 0
+FUNCTION EdgeCrosses(u, v):
+    IF side[u] != 0 AND side[v] != 0 AND side[u] != side[v]:
+        RETURN 1
+    ELSE:
+        RETURN 0
+FUNCTION CurrentCut():
+    cut = 0
+    FOR each edge (u, v) IN E:
+        IF EdgeCrosses(u, v) == 1:
+            cut = cut + 1
+    RETURN cut
+FUNCTION UpperBound(currentCut):
+    undecidedEdges = 0
+    FOR each edge (u, v) IN E:
+        IF side[u] == 0 OR side[v] == 0:
+            undecidedEdges = undecidedEdges + 1
+    RETURN currentCut + undecidedEdges
+FUNCTION BACKTRACK(index, currentCut):
+    IF index > n:
+        IF currentCut > bestCut:
+            bestCut = currentCut
+            FOR i = 1 TO n:
+                bestSide[i] = side[i]
+        RETURN
+    bound = UpperBound(currentCut)
+    IF bound <= bestCut:
+        RETURN
+    side[index] = 1
+    added = 0
+    FOR each neighbor u OF vertex[index]:
+        IF side[u] == 2:
+            added = added + 1
+    BACKTRACK(index + 1, currentCut + added)
+    side[index] = 2
+    added = 0
+    FOR each neighbor u OF vertex[index]:
+        IF side[u] == 1:
+            added = added + 1
+    BACKTRACK(index + 1, currentCut + added)
+    side[index] = 0
+MAIN:
+    IF V is empty:
+        bestCut = 0
+        A = empty
+        B = empty
+        RETURN A, B, bestCut
+    FOR i = 1 TO n:
+        side[i] = 0
+        bestSide[i] = 0
+    BACKTRACK(1, 0)
+    A = empty set
+    B = empty set
+    FOR i = 1 TO n:
+        IF bestSide[i] == 1:
+            ADD vertex[i] TO A
+        ELSE:
+            ADD vertex[i] TO B
+    RETURN A, B, bestCut
