@@ -1,0 +1,137 @@
+import java.util.*;
+
+public class KnapsackVsContainer {
+
+    static class Item {
+        int id, weight, value;
+
+        Item(int id, int weight, int value) {
+            this.id = id;
+            this.weight = weight;
+            this.value = value;
+        }
+    }
+
+    static List<Integer> knapsackDP(Item[] items, int capacity) {
+        int n = items.length;
+        int[][] dp = new int[n + 1][capacity + 1];
+
+        for (int i = 1; i <= n; i++) {
+            for (int c = 0; c <= capacity; c++) {
+                dp[i][c] = dp[i - 1][c];
+
+                if (items[i - 1].weight <= c) {
+                    dp[i][c] = Math.max(
+                        dp[i][c],
+                        dp[i - 1][c - items[i - 1].weight]
+                            + items[i - 1].value
+                    );
+                }
+            }
+        }
+
+        List<Integer> selected = new ArrayList<>();
+        int c = capacity;
+
+        for (int i = n; i >= 1; i--) {
+            if (dp[i][c] != dp[i - 1][c]) {
+                selected.add(items[i - 1].id);
+                c -= items[i - 1].weight;
+            }
+        }
+
+        Collections.reverse(selected);
+        return selected;
+    }
+
+    static List<Integer> containerGreedy(Item[] items, int capacity) {
+        Item[] sortedItems = items.clone();
+
+        Arrays.sort(sortedItems, (a, b) ->
+            Integer.compare(b.weight, a.weight)
+        );
+
+        List<Integer> selected = new ArrayList<>();
+        int remainingCapacity = capacity;
+
+        for (Item item : sortedItems) {
+            if (item.weight <= remainingCapacity) {
+                selected.add(item.id);
+                remainingCapacity -= item.weight;
+            }
+        }
+
+        return selected;
+    }
+
+    static int totalWeight(Item[] items, List<Integer> selected) {
+        int total = 0;
+
+        for (Item item : items) {
+            if (selected.contains(item.id)) {
+                total += item.weight;
+            }
+        }
+
+        return total;
+    }
+
+    static int totalValue(Item[] items, List<Integer> selected) {
+        int total = 0;
+
+        for (Item item : items) {
+            if (selected.contains(item.id)) {
+                total += item.value;
+            }
+        }
+
+        return total;
+    }
+
+    static void printResult(
+            String method,
+            Item[] items,
+            List<Integer> selected,
+            int capacity) {
+
+        int weight = totalWeight(items, selected);
+        int value = totalValue(items, selected);
+        double utilization = (weight * 100.0) / capacity;
+
+        System.out.println("\n" + method);
+        System.out.println("Selected Items: " + selected);
+        System.out.println("Total Weight: " + weight);
+        System.out.println("Total Value: " + value);
+        System.out.printf("Capacity Utilization: %.2f%%%n", utilization);
+    }
+
+    public static void main(String[] args) {
+
+        Item[] items = {
+            new Item(1, 2, 6),
+            new Item(2, 3, 5),
+            new Item(3, 4, 8),
+            new Item(4, 5, 9),
+            new Item(5, 7, 14)
+        };
+
+        int capacity = 10;
+
+        List<Integer> dpResult = knapsackDP(items, capacity);
+        List<Integer> greedyResult = containerGreedy(items, capacity);
+
+        printResult(
+            "0/1 Knapsack - Dynamic Programming",
+            items,
+            dpResult,
+            capacity
+        );
+
+        printResult(
+            "Container Loading - Greedy",
+            items,
+            greedyResult,
+            capacity
+        );
+    }
+}
